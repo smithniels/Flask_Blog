@@ -5,29 +5,43 @@ I'm just adding comments to understand how it works
 
 TODO: What is a slug?
     Slugs are used to generate 'clean'ish end bits of url's
-    www.google.com/this-is-the-slug
+    www.google.com/this-is-what-the-slug-makes
 
 TODO: *args,**kwargs?
     *args     Used to pass a number of arguments
     *kwargs   Used to pass a number of KeyWord arguments
+
+TODO: Make this app run again?
+
+TODO:
+TODO:
+TODO:
+TODO:
+
+Notes:
+    FTS: Full Text Search
+    Single quotes? Dict. Double quotes? JSON!
+    pip install markdown && pip install peewee && pip install micawber && pip install flask
+
 '''
 import datetime # Gets the time
-from functools import wraps #
+import functools
+# from functools import wraps # This breaks the everything. It just wants "import functools" just.
 import os
 import re # Regex
 import urllib
 from flask import (Flask, abort, flash, Markup, redirect, render_template,
-                    request, Response, session, url_for)
+                   request, Response, session, url_for)
 from markdown import markdown
 from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.extra import ExtraExtension
-from micawber import bootstrap_basic, parse_html
+from micawber import bootstrap_basic, parse_html # Micawber is a small library for extracting rich content from urls
 from micawber.cache import Cache as OEmbedCache
 from peewee import *
 from playhouse.flask_utils import FlaskDB, get_object_or_404, object_list
 from playhouse.sqlite_ext import *
 
-ADMIN_PASSWORD = 'password'
+ADMIN_PASSWORD = 'password' # Consider at least using a one-way hash to store the password.
 APP_DIR = os.path.dirname(os.path.realpath(__file__))    # Return the directory name of pathname path.
                                                          # This is the first element of the pair returned
                                                          # by passing path to the function split()
@@ -56,6 +70,7 @@ class Entry(flask_db.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = re.sub('[^\w]+', '-', self.title.lower())
+            # \w : Find "any word character"
         ret = super(Entry, self).save(*args,**kwargs)
 
         #store search content
@@ -72,9 +87,8 @@ class Entry(flask_db.Model):
             fts_entry.content = search_content
             fts_entry.save()
 
-class FTSEntry(FTSModel):      # Is this correct <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+class FTSEntry(FTSModel):      # Is this correct? <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     content = SearchField()
-
     class Meta:
         database = database
 
@@ -94,9 +108,10 @@ def main():
     database.create_tables([Entry,FTSEntry])
     app.run()
     # app.run(debug= True) # Running Flask in Development automatically switching debug to True
+    # but they had me add in "DEBUG = False" earlier, so that line is unnecessary/ counterproductive
 
 def login_required(fn):
-    @functools.wraps(fn) #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    @functools.wraps(fn) #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def inner(*args,**kwarg):
         if session.get('logged_in'):
             return fn(*args,**kwargs)
