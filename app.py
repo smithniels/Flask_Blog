@@ -13,7 +13,7 @@ TODO: *args,**kwargs?
 
 TODO: Make this app run again?
 
-TODO:
+TODO: Learn Regex (REGulerEXpressions)
 TODO:
 TODO:
 TODO:
@@ -87,7 +87,7 @@ class Entry(flask_db.Model):
             fts_entry.content = search_content
             fts_entry.save()
 
-class FTSEntry(FTSModel):      # Is this correct? <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+class FTSEntry(FTSModel):
     content = SearchField()
     class Meta:
         database = database
@@ -102,16 +102,16 @@ def clean_querystring(request_args, *keys_to_remove, **new_values):
 
 @app.errorhandler(404)
 def not_found(exc):
-    return Response('<h2>Not Found</h2>', 404) #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    return Response('<h2>Not Found</h2>', 404)
 
 def main():
     database.create_tables([Entry,FTSEntry])
     app.run()
     # app.run(debug= True) # Running Flask in Development automatically switching debug to True
-    # but they had me add in "DEBUG = False" earlier, so that line is unnecessary/ counterproductive
+    # but they had me add in "DEBUG = False" earlier, so that line is unnecessary/ redundant
 
 def login_required(fn):
-    @functools.wraps(fn) #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    @functools.wraps(fn)
     def inner(*args,**kwarg):
         if session.get('logged_in'):
             return fn(*args,**kwargs)
@@ -165,10 +165,10 @@ def search(cls, query):
             .join(FTSEntry, on =(Entry.id == FTSEntry.docid))
             .where(
                 (Entry.published == True)  &
-                (FTSEntry.match(search)
-                )
-            .order_by(SQL('score')))
-            )   #<<<<<<<<<<<<<<<<<<<<<<<<so many parens....<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                (FTSEntry.match(search))
+            .order_by(SQL('score'))
+                  )
+            )
 
 @classmethod
 def drafts(cls):
@@ -191,7 +191,7 @@ def detail(slug):
 
 @property
 def html_content(self):
-    hilite = CodeHiliteExtention(linenums = False, css_class= 'highlight')
+    hilite = CodeHiliteExtension(linenums = False, css_class= 'highlight')
     extras = ExtraExtension()
     markdown_content = markdown(self.content, extentions = [hilite,extras])
     oembed_content = parse_html(
@@ -246,8 +246,6 @@ def edit(slug):
         else:
             flash('Title/Content are required','danger')
     return render_template('edit.html', entry= entry)
-
-
 
 if __name__ == '__main__':
     main()
