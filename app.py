@@ -7,26 +7,27 @@ TODO: What is a slug?
     Slugs are used to generate 'clean'ish end bits of url's
     www.google.com/this-is-what-the-slug-makes
 
-TODO: *args,**kwargs?
-    *args     Used to pass a number of arguments
-    *kwargs   Used to pass a number of KeyWord arguments
-
-TODO: Make this app run again?
+TODO:
 
 TODO: Learn Regex (REGulerEXpressions)
 TODO:
 TODO:
 TODO:
+TODO: Split this up into seperate modules
 
 Notes:
     FTS: Full Text Search
     Single quotes? Dict. Double quotes? JSON!
     pip install markdown && pip install peewee && pip install micawber && pip install flask
+    *args & **kwargs
+        *args     Used to pass a number of arguments
+        *kwargs   Used to pass a number of KeyWord arguments
+    DRY: Don't Repeat Yourself
 
 '''
 import datetime # Gets the time
 import functools
-# from functools import wraps # This breaks the everything. It just wants "import functools" just.
+# from functools import wraps # This breaks the everything. It wants "import functools" just.
 import os
 import re # Regex
 import urllib
@@ -49,11 +50,9 @@ DATABASE = 'sqliteext:///%s' % os.path.join(APP_DIR, 'blog.db')
 DEBUG = False
 SECRETKEY = 'secret'
 SITE_WIDTH = 800
-
 FLASK_ENV = 'Development'
 app = Flask(__name__)
 app.config.from_object(__name__)
-
 flask_db = FlaskDB(app)
 database = flask_db.database
 
@@ -145,18 +144,18 @@ def index():
     if search_query:
         query = Entry.search(search_query)
     else:
-        query = Entry.public().order_by(Entry.timestamp.desc())
-    return object_list('index.html',query,search=search_query)
+        query = Entry.public().order_by(Entry.timestamp.desc()) # return all published in chronological order
+    return object_list('index.html', query ,search=search_query)
 
 @classmethod
-def public():
+def public(cls): # cls stands for class
     return Entry.select().where(Entry.published == True)
 
 @classmethod
 def search(cls, query):
     words = [word.strip() for word in query.split() if word.strip()]
     if not words:
-        #return empty querry
+        #return empty query
         return Entry.select().where(Entry.id == 0)
     else:
         search = ' '.join(words)
@@ -181,7 +180,7 @@ def drafts():
     return object_list('index.html', query)
 
 @app.route('/slugs/')
-def detail(slug):
+def detail(slug): # get the details on a post. Must be logged in
     if session.get('logged_in'):
         query = Entry.select()
     else:
@@ -228,7 +227,7 @@ def create():
     return render_template('create.html')
 
 @app.route('/<slug>/edit', methods = ['GET','POST'])
-@login_required
+@login_required # My legs hurt
 def edit(slug):
     entry = get_object_or_404(Entry,  Entry.slug == slug)
     if request.method == 'POST':
@@ -250,4 +249,4 @@ def edit(slug):
 if __name__ == '__main__':
     main()
 
-print('It worked')
+print('Shut it down')
