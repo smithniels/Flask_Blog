@@ -4,7 +4,6 @@ https://github.com/realpython/book2-exercises/tree/master/flask-blog
 http://www.sqlitetutorial.net/sqlite-python/sqlite-python-select/
 https://stackoverflow.com/questions/16311974/connect-to-a-database-in-flask-which-approach-is-better
 K, I'M HIGH,
-
 BUT_REVIEW_THOSE(3_LINKS^)
 IF DATABASE_CONNECTION = FALSE:
     RETURN REDO_ALL_DATABASE_CONNECTION_STUFF()
@@ -19,6 +18,8 @@ TODO: Add in a check if logged in - else --> redirect(url_for(/login))
                     what are the common rules here?
 TODO: Figure out flask_login
 TODO: Figure out how to return the username i.e. "you are logged in as {{username}}"
+TODO: Add timestamp to posts
+
 '''
 
 # imports!
@@ -90,7 +91,9 @@ def main():
     g.db = connect_db()
     cur = g.db.cursor()
     cur.execute('select * from user')  # Problem <<<<<< AttributeError: 'Connection' object has no attribute 'execute'
-    posts = [dict(title=row[0], post=row[1]) for row in cur.fetchall()] # No, I don't fully understand this. Why do you ask?
+    # posts = [dict(title=row[0], post=row[1]) for row in cur.fetchall()] # No, I don't fully understand this. Why do you ask?
+    texttext = cur.fetchall()
+    # return str(texttext)
     return render_template('main.html')#, posts=posts)
 
 @app.route('/add', methods=['POST'])
@@ -104,10 +107,11 @@ def add():
     else:
         g.db = connect_db()
         cur = g.db.cursor()
-        cur.execute('INSERT INTO user (title, Posts) VALUES (?, ?)', [request.form['title'], request.form['post']]
+        cur.execute('''INSERT INTO user (title, posts) VALUES (%s ,%s) ''' , (title,post)
+         # (?, ?)', [request.form['title'], request.form['post']]
         )
         cur.close()
-        cur.commit()
+        g.db.commit()
         cur.close()
         flash('New entry was successfully posted!')
         return redirect(url_for('main'))
