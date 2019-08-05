@@ -1,0 +1,31 @@
+{% extends "template.html" %}
+{% block content %}
+
+  <h2>Welcome to the Blog!</h2>
+  <!-- <h3>Greetings {{session.username}}</h3> -->
+    <p><a href="/logout">Logout</a></p>
+    <h3>Add a new post:</h3>
+    <form action="{{ url_for('add') }}" method="post" class="add">
+        <div>
+          <label><strong>Title:</strong></label>
+          <input name="title" type="text">
+        </div>
+        <div>
+          <label><strong>Post:</strong></label>
+          <textarea name="post" rows="6" cols="40"></textarea>
+        </div>
+        <div class="">
+          <input class="button" type="submit" value="Submit">
+        </div>
+    </form>
+
+  <h3>Posts:</h3>
+
+  {% for p in posts %}
+  <!-- Changing the order of these rows will change the order they appear on the /main/ page -->
+    <strong>Title:</strong> {{ p.title }} <br>
+    <strong>Time:</strong> {{ p.time }} <br>
+    <strong>Post:</strong> {{ p.post }} <br>
+    <br>
+  {% endfor %}
+{% endblock %}
