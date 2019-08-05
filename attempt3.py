@@ -40,12 +40,12 @@ from datetime import datetime
 
 app = Flask(__name__) # instantiate object
 Bootstrap(app) # Make app bootstrap enabled
-
-app.config.from_object(__name__)
 mysql  = MySQL(app)
 
+
 #Config
-db = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load'
+app.config.from_object(__name__)
+db                           = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load'
 app.config['MYSQL_HOST']     = db['mysql_host']
 app.config['MYSQL_DB']       = db['mysql_db']
 app.config['MYSQL_USER']     = db['mysql_user']
@@ -53,15 +53,15 @@ app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['USERNAME']       = db['username']
 app.config['PASSWORD']       = db['password']
 app.config['SECRET_KEY']     = db['secret_key']
-mysql                        = MySQL(app)
-# print(os.getcwd())
-#
+
 # function used for connecting to the database
+mysql = MySQL(app)
+
 # Creates the connection object
 def connect_db():
-    return MySQLdb.Connection(host = app.config['MYSQL_HOST'],
-                              user = app.config['MYSQL_USER'],
-                              passwd = app.config['MYSQL_PASSWORD'],
+    return MySQLdb.Connection(host     = app.config['MYSQL_HOST'],
+                              user     = app.config['MYSQL_USER'],
+                              passwd   = app.config['MYSQL_PASSWORD'],
                               database = app.config['MYSQL_DB']
                               )
 
@@ -84,6 +84,7 @@ def login():
             error = 'You are invalid'
             status_code = 401
         else:
+            name = request.form['username']
             session['logged_in'] = True
             return redirect(url_for('main'))
     return render_template('login.html', error=error), status_code
@@ -106,8 +107,8 @@ def main():
 @login_required
 def add():
     title = request.form['title']
-    post = request.form['post']
-    time = datetime.today()
+    post  = request.form['post']
+    time  = datetime.today()
     if not title or not post:
         flash("All fields are required. Please try again.",'error')
         return redirect(url_for('main'))
@@ -132,9 +133,6 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug = True)
-
-
-
 
 # https://github.com/realpython/book2-exercises/tree/master/flask-blog
 # http://www.sqlitetutorial.net/sqlite-python/sqlite-python-select/
