@@ -19,6 +19,9 @@ TODO: Add in a delete button
         remove from db
 TODO: Add functionality for photos
         upload your photo and display on post
+TODO: Change font
+        CSS
+        Class{ font-family: Georgia, "Times New Roman", Times, serif ;}
 TODO: Connect to www.nielssmith.com
 TODO: Make it pretty
 
