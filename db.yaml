@@ -1,7 +1,0 @@
-secret_key: 'abc'
-mysql_user: 'root'
-mysql_host: 'localhost'
-mysql_db: 'mydatabase'
-username: 'Niels'
-password: 'password'
-mysql_password: 'Fred4000!'
