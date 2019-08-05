@@ -5,15 +5,22 @@ TODO: Figure out how to return the username i.e. "you are logged in as {{usernam
 TODO: Add autocrement ID to db
 TODO: Figure out flask_login
 TODO: Add in a check if logged in - else --> redirect(url_for(/login))
-            JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
-            maybe put it at the start of every refresh, but that might get annoying
-            can you time it somehow? At what point would you stop? What are the rules here?
+        JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
+        maybe put it at the start of every refresh, but that might get annoying
+        can you time it somehow? At what point would you stop? What are the rules here?
 TODO: Make it so CTRL+ENT will just post. (is that a good idea?)
 TODO: Add an ABOUT ME page
-TODO: Make it pretty
+        Or add in a photo in sidebar with a short About Me paragraph
 TODO: Add in an edit button
+        Send to EDIT page
+        Retrieve post and save changes
 TODO: Add in a delete button
+        send "Are you sure",'warning'
+        remove from db
+TODO: Add functionality for photos
+        upload your photo and display on post
 TODO: Connect to www.nielssmith.com
+TODO: Make it pretty
 
 '''
 
@@ -88,10 +95,10 @@ def main():
     cur = g.db.cursor()
     cur.execute('select * from user')
     posts = [dict(title=row[0], post=row[1], time= row[3]) for row in cur.fetchall()] # No, I don't fully understand this. Why do you ask?
-                                                                                      #  
-                                                                                      # It's looking row by row through the db and returning 
-                                                                                      # the values based on their position and placing them in 
-                                                                                      # a dictionary 
+                                                                                      #
+                                                                                      # It's looking row by row through the db and returning
+                                                                                      # the values based on their position and placing them in
+                                                                                      # a dictionary
     g.db.close()
     return render_template('main.html', posts=posts)
 
