@@ -2,13 +2,11 @@
 Attempt #3
 
 TODO: Figure out how to return the username i.e. "you are logged in as {{username}}"
-TODO: Add autocrement ID to db
 TODO: Figure out flask_login
 TODO: Add in a check if logged in - else --> redirect(url_for(/login))
         JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
         maybe put it at the start of every refresh, but that might get annoying
         can you time it somehow? At what point would you stop? What are the rules here?
-TODO: Make it so CTRL+ENT will just post. (is that a good idea?)
 TODO: Add an ABOUT ME page
         Or add in a photo in sidebar with a short About Me paragraph
 TODO: Add in an edit button
@@ -22,6 +20,7 @@ TODO: Add functionality for photos
 TODO: Change font
         CSS
         Class{ font-family: Georgia, "Times New Roman", Times, serif ;}
+TODO: Create multiple accounts
 TODO: Connect to www.nielssmith.com
 TODO: Make it pretty
 
@@ -92,17 +91,18 @@ def login():
             return redirect(url_for('main'))
     return render_template('login.html', error=error), status_code
 
+@app.route('/about', methods = ['GET'])
+def about():
+    return render_template('about.html')
+
 @app.route('/main')
 @login_required
 def main():
+    #flash("Hello ", name) # error: "name not found" I'm assuming because it's
     g.db = connect_db()
     cur = g.db.cursor()
     cur.execute('select * from user')
-    posts = [dict(title=row[0], post=row[1], time= row[3]) for row in cur.fetchall()] # No, I don't fully understand this. Why do you ask?
-                                                                                      #
-                                                                                      # It's looking row by row through the db and returning
-                                                                                      # the values based on their position and placing them in
-                                                                                      # a dictionary
+    posts = [dict(title=row[0], post=row[1], time= row[2]) for row in cur.fetchall()]
     g.db.close()
     return render_template('main.html', posts=posts)
 
@@ -131,7 +131,7 @@ def add():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None) # To release a session use pop() method!!!
-    flash('You were logged out')
+    flash('Loggout Successful')
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
