@@ -1,9 +1,15 @@
 {% extends "template.html" %}
+
 {% block content %}
 
   <h2>Welcome to the Blog!</h2>
   <!-- <h3>Greetings {{session.username}}</h3> -->
-    <p><a href="/logout">Logout</a></p>
+    <p style="text-align:left;">
+      <a href="/about">About Me</a>
+    <span style="float:right;">
+      <a href="/logout">Logout</a></p>
+    </span>
+
     <h3>Add a new post:</h3>
     <form action="{{ url_for('add') }}" method="post" class="add">
         <div>
@@ -20,7 +26,6 @@
     </form>
 
   <h3>Posts:</h3>
-
   {% for p in posts %}
   <!-- Changing the order of these rows will change the order they appear on the /main/ page -->
     <strong>Title:</strong> {{ p.title }} <br>
@@ -28,4 +33,5 @@
     <strong>Post:</strong> {{ p.post }} <br>
     <br>
   {% endfor %}
+
 {% endblock %}
