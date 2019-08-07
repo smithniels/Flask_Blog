@@ -17,9 +17,9 @@ TODO: Add in a delete button
         remove from db
 TODO: Add functionality for photos
         upload your photo and display on post
+TODO: Add in Forgot password button?
 TODO: Change font
-        CSS
-        Class{ font-family: Georgia, "Times New Roman", Times, serif ;}
+        CSS: font-family: Georgia, "Times New Roman", Times, serif ;
 TODO: Create multiple accounts
 TODO: Connect to www.nielssmith.com
 TODO: Make it pretty
@@ -33,12 +33,10 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from functools import wraps
 from flask_bootstrap import Bootstrap
 from flask_mysqldb   import MySQL
+from datetime import datetime
 import yaml
 import os
-import mysql.connector
-import sqlite3
 import MySQLdb
-from datetime import datetime
 
 app = Flask(__name__) # instantiate object
 Bootstrap(app) # Make app bootstrap enabled
@@ -68,7 +66,7 @@ def connect_db():
                               )
 
 def login_required(test):
-    @wraps(test)
+    @wraps(test) # I still don't understand the @wraps(...)
     def wrap(*args,**kwargs):
         if 'logged_in' in session:
             return test(*args, **kwargs)
