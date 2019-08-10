@@ -2,11 +2,13 @@
 Attempt #3
 
 TODO: Figure out how to return the username i.e. "you are logged in as {{username}}"
-TODO: Figure out flask_login
-TODO: Add in a check if logged in - else --> redirect(url_for(/login))
-        JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
-        maybe put it at the start of every refresh, but that might get annoying
-        can you time it somehow? At what point would you stop? What are the rules here?
+TODO: Figure out flask_login {
+    TODO: Add in Forgot password button? (flask-login)
+    TODO: Add in a check if logged in - else --> redirect(url_for(/login))
+            JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
+            maybe put it at the start of every refresh, but that might get annoying
+            can you time it somehow? At what point would you stop? What are the rules here?
+}
 TODO: Add an ABOUT ME page
         Or add in a photo in sidebar with a short About Me paragraph
 TODO: Add in an edit button
@@ -17,13 +19,15 @@ TODO: Add in a delete button
         remove from db
 TODO: Add functionality for photos
         upload your photo and display on post
-TODO: Add in Forgot password button?
 TODO: Change font
         CSS: font-family: Georgia, "Times New Roman", Times, serif ;
 TODO: Create multiple accounts
 TODO: Connect to www.nielssmith.com
 TODO: Make it pretty
 
+
+Notes:
+ * Statements {%  %} / Expressions {{  }}
 '''
 
 # imports!
@@ -84,9 +88,9 @@ def login():
             error = 'You are invalid'
             status_code = 401
         else:
-            name = request.form['username']
+            username = request.form['username']
             session['logged_in'] = True
-            return redirect(url_for('main'))
+            return redirect(url_for('main', username = username))
     return render_template('login.html', error=error), status_code
 
 @app.route('/about', methods = ['GET'])
@@ -102,7 +106,7 @@ def main():
     cur.execute('select * from user')
     posts = [dict(title=row[0], post=row[1], time= row[2]) for row in cur.fetchall()]
     g.db.close()
-    return render_template('main.html', posts=posts)
+    return render_template('main.html',posts=posts)
 
 @app.route('/add', methods=['POST'])
 @login_required
