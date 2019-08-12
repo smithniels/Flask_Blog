@@ -45,11 +45,10 @@ import MySQLdb
 app = Flask(__name__) # instantiate object
 Bootstrap(app) # Make app bootstrap enabled
 mysql  = MySQL(app)
-
+db = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load'
 
 #Config
 app.config.from_object(__name__)
-db                           = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load'
 app.config['MYSQL_HOST']     = db['mysql_host']
 app.config['MYSQL_DB']       = db['mysql_db']
 app.config['MYSQL_USER']     = db['mysql_user']
