@@ -32,7 +32,8 @@ Notes:
 '''
 
 # imports!
-from flask import Flask, render_template, request, session, flash, redirect, url_for, g
+from flask import Flask, render_template, request, session, \
+flash, redirect, url_for, g
 from functools import wraps
 from flask_bootstrap import Bootstrap
 from flask_mysqldb   import MySQL
@@ -41,10 +42,13 @@ import yaml
 import os
 import MySQLdb
 
-app = Flask(__name__) # instantiate object
-db = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load' (they were right)
+# instantiate object
+app = Flask(__name__)
+db = yaml.full_load(open('db.yaml'))
+#someone on stack said use 'full_load' not 'load' (they were right)
 mysql = MySQL(app)
-Bootstrap(app) # Make app bootstrap enabled
+# Make app bootstrap enabled
+Bootstrap(app)
 
 #Config
 app.config.from_object(__name__)
@@ -68,7 +72,9 @@ def connect_db():
                               )
 
 def login_required(test):
-    @wraps(test) # I still don't understand the @wraps(...)
+    @wraps(test)
+    # I still don't fully understand the @wraps(...)
+    
     def wrap(*args,**kwargs):
         if 'logged_in' in session:
             return test(*args, **kwargs)
@@ -99,11 +105,11 @@ def about():
 @app.route('/main')
 @login_required
 def main():
-    #flash("Hello ", name) # error: "name not found" I'm assuming because it's
     g.db = connect_db()
     cur = g.db.cursor()
     cur.execute('select * from user')
-    posts = [dict(title=row[0], post=row[1], time= row[2]) for row in cur.fetchall()]
+    posts = [dict(title=row[0], post=row[1], time= row[2]) for \
+    row in cur.fetchall()]
     g.db.close()
     return render_template('main.html', posts=posts)
 
@@ -114,7 +120,7 @@ def add():
     post  = request.form['post']
     time  = datetime.today()
     if not title or not post:
-        flash("All fields are required. Please try again.",'error')
+        flash("All fields are required. Please try again.", 'error')
         return redirect(url_for('main'))
     else:
         g.db = connect_db()
@@ -132,7 +138,8 @@ def add():
 @login_required
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None) # To release a session use pop() method! "Gotta pop off"
+    session.pop('logged_in', None)
+    # To release a session use pop() method! "Gotta pop off"
     flash('Loggout Successful')
     return redirect(url_for('login'))
 
