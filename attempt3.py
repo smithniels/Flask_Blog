@@ -33,7 +33,7 @@ Notes:
 
 # imports!
 from flask import Flask, render_template, request, session, \
-flash, redirect, url_for, g
+    flash, redirect, url_for, g
 from functools import wraps
 from flask_bootstrap import Bootstrap
 from flask_mysqldb   import MySQL
@@ -74,7 +74,7 @@ def connect_db():
 def login_required(test):
     @wraps(test)
     # I still don't fully understand the @wraps(...)
-    
+
     def wrap(*args,**kwargs):
         if 'logged_in' in session:
             return test(*args, **kwargs)
@@ -89,7 +89,7 @@ def login():
     status_code = 200
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME'] or \
-        request.form['password'] != app.config['PASSWORD']:
+            request.form['password'] != app.config['PASSWORD']:
             error = 'You are invalid'
             status_code = 401
         else:
