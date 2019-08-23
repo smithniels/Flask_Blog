@@ -8,6 +8,8 @@ TODO: Figure out flask_login {
             JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
             maybe put it at the start of every refresh, but that might get annoying
             can you time it somehow? At what point would you stop? What are the rules here?
+            TODO: From flask_login import LoginManager #Project for later
+            https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
 }
 TODO: Add an ABOUT ME page
         Or add in a photo in sidebar with a short About Me paragraph
@@ -19,8 +21,6 @@ TODO: Add in a delete button
         remove from db
 TODO: Add functionality for photos
         upload your photo and display on post
-TODO: Change font
-        CSS: font-family: Georgia, "Times New Roman", Times, serif ;
 TODO: Create multiple accounts
 TODO: Connect to www.nielssmith.com
 TODO: Make it pretty
@@ -32,8 +32,6 @@ Notes:
 
 # imports!
 from flask import Flask, render_template, request, session, flash, redirect, url_for, g
-# from flask_login import LoginManager #Project for later
-## https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
 from functools import wraps
 from flask_bootstrap import Bootstrap
 from flask_mysqldb   import MySQL
@@ -43,9 +41,9 @@ import os
 import MySQLdb
 
 app = Flask(__name__) # instantiate object
+db = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load' (they were right)
+mysql = MySQL(app)
 Bootstrap(app) # Make app bootstrap enabled
-mysql  = MySQL(app)
-db = yaml.full_load(open('db.yaml')) #someone on stack said use 'full_load' not 'load'
 
 #Config
 app.config.from_object(__name__)
@@ -83,7 +81,8 @@ def login():
     error = None
     status_code = 200
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] or request.form['password'] != app.config['PASSWORD']:
+        if request.form['username'] != app.config['USERNAME'] or \
+        request.form['password'] != app.config['PASSWORD']:
             error = 'You are invalid'
             status_code = 401
         else:
@@ -105,7 +104,7 @@ def main():
     cur.execute('select * from user')
     posts = [dict(title=row[0], post=row[1], time= row[2]) for row in cur.fetchall()]
     g.db.close()
-    return render_template('main.html',posts=posts)
+    return render_template('main.html', posts=posts)
 
 @app.route('/add', methods=['POST'])
 @login_required
@@ -129,21 +128,13 @@ def add():
         flash('New entry was successfully posted!')
         return redirect(url_for('main'))
 
+@login_required
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None) # To release a session use pop() method!!!
+    session.pop('logged_in', None) # To release a session use pop() method! "Gotta pop off"
     flash('Loggout Successful')
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug = True)
-
-# https://github.com/realpython/book2-exercises/tree/master/flask-blog
-# http://www.sqlitetutorial.net/sqlite-python/sqlite-python-select/
-# https://stackoverflow.com/questions/16311974/connect-to-a-database-in-flask-which-approach-is-better
-# K, I'M HIGH,
-#     BUT_REVIEW_THOSE(3_LINKS^)
-#     IF DATABASE_CONNECTION = FALSE:
-#     ELSE:
-#         RETURN REDO_ALL_DATABASE_CONNECTION_STUFF()
-#         RETURN CELEBRATE()
+# I had a lot of fun with this!
