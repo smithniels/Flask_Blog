@@ -28,6 +28,7 @@ TODO: Make it pretty
 
 Notes:
  * Statements {%  %} / Expressions {{  }}
+ * Use backslash \ to indicate code is continued on the next line
 '''
 
 # imports!
