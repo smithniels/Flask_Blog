@@ -1,5 +1,7 @@
+# Attempt #3
+# attempt.py
+
 '''
-Attempt #3
 
 TODO: Figure out how to return the username i.e. "you are logged in as {{username}}"
 TODO: Figure out flask_login {
@@ -27,8 +29,9 @@ TODO: Make it pretty
 
 
 Notes:
- * Statements {%  %} / Expressions {{  }}
+ * Jinja: Statements {%  %} / Expressions {{  }}
  * Use backslash \ to indicate code is continued on the next line
+ * "If a name requires a comment, then the name does not reveal its intent."
 '''
 
 # imports!
@@ -118,7 +121,7 @@ def main():
 def add():
     title = request.form['title']
     post  = request.form['post']
-    time  = datetime.today()
+    time  = datetime.today() # Rename to Timestamp
     if not title or not post:
         flash("All fields are required. Please try again.", 'error')
         return redirect(url_for('main'))
@@ -145,4 +148,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug = True)
-# I had a lot of fun with this!
+# I had a lot of fun with this, but how do I make it better?!
