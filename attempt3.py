@@ -1,151 +1,53 @@
-# Attempt #3
-# attempt.py
+<!DOCTYPE html>
+<html>
 
-'''
+<head>
+    <title>Niels' Blog</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="C:\Users\19258\Desktop\code\Active\attempt\static\nsFavicon4.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-TODO: Figure out how to return the username i.e. "you are logged in as {{username}}"
-TODO: Figure out flask_login {
-    TODO: Add in Forgot password button? (flask-login)
-    TODO: Add in a check if logged in - else --> redirect(url_for(/login))
-            JK that already exists. I think I need an auto logout like session.pop(logged_in, none) but automatically
-            maybe put it at the start of every refresh, but that might get annoying
-            can you time it somehow? At what point would you stop? What are the rules here?
-            TODO: From flask_login import LoginManager #Project for later
-            https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
-}
-TODO: Add an ABOUT ME page
-        Or add in a photo in sidebar with a short About Me paragraph
-TODO: Add in an edit button
-        Send to EDIT page
-        Retrieve post and save changes
-TODO: Add in a delete button
-        send "Are you sure",'warning'
-        remove from db
-TODO: Add functionality for photos
-        upload your photo and display on post
-TODO: Create multiple accounts
-TODO: Connect to www.nielssmith.com
-TODO: Make it pretty
+<body>
+  <header class="top">
+
+    <div>
+        <span >
+            {% if session.logged_in %}
+            <a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout </a>
+        {% else %}
+        <a href="/login/"><span class="glyphicon glyphicon-log-in"></span> Login </a>
+        <a href="/register/"><span class="glyphicon glyphicon-pencil"></span> Sign up</a> {% endif %}
+        </span>
+    </div>
+    <div class="title">
+      Niels Blog
+    </div>
+    <span class="right">
+      <!-- class = fa is referring to the Font Awesome stylesheet -->
+          <a href="https://twitter.com/KneelsS" class="fa fa-twitter"></a>
+          <a href="https://www.instagram.com/smithkneels/" class="fa fa-instagram "></a>
+          <span > smithniels@gmail.com</span>
+     </span>
+     </header>
 
 
-Notes:
- * Jinja: Statements {%  %} / Expressions {{  }}
- * Use backslash \ to indicate code is continued on the next line
- * "If a name requires a comment, then the name does not reveal its intent."
-'''
 
-# imports!
-from flask import Flask, render_template, request, session, \
-    flash, redirect, url_for, g
-from functools import wraps
-from flask_bootstrap import Bootstrap
-from flask_mysqldb   import MySQL
-from datetime import datetime
-import yaml
-import os
-import MySQLdb
+        <div class="container">
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %} {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}</p>
+            {% endif %}
 
-# instantiate object
-app = Flask(__name__)
-db = yaml.full_load(open('db.yaml'))
-#someone on stack said use 'full_load' not 'load' (they were right)
-mysql = MySQL(app)
-# Make app bootstrap enabled
-Bootstrap(app)
+            <!-- inheritance -->
+            {% block content %} {% endblock %}
+            <!-- end inheritance -->
 
-#Config
-app.config.from_object(__name__)
-app.config['MYSQL_HOST']     = db['mysql_host']
-app.config['MYSQL_DB']       = db['mysql_db']
-app.config['MYSQL_USER']     = db['mysql_user']
-app.config['MYSQL_PASSWORD'] = db['mysql_password']
-app.config['USERNAME']       = db['username']
-app.config['PASSWORD']       = db['password']
-app.config['SECRET_KEY']     = db['secret_key']
+        </div>
+    </div>
 
-# function used for connecting to the database
-mysql = MySQL(app)
+</body>
 
-# Creates the connection object
-def connect_db():
-    return MySQLdb.Connection(host     = app.config['MYSQL_HOST'],
-                              user     = app.config['MYSQL_USER'],
-                              passwd   = app.config['MYSQL_PASSWORD'],
-                              database = app.config['MYSQL_DB']
-                              )
-
-def login_required(test):
-    @wraps(test)
-    # I still don't fully understand the @wraps(...)
-
-    def wrap(*args,**kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            flash('You\'ll need to login first.')
-            return redirect(url_for('login'))
-    return wrap
-
-@app.route('/', methods = ['GET','POST'])
-def login():
-    error = None
-    status_code = 200
-    if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] or \
-            request.form['password'] != app.config['PASSWORD']:
-            error = 'You are invalid'
-            status_code = 401
-        else:
-            username = request.form['username']
-            session['logged_in'] = True
-            return redirect(url_for('main', username = username))
-    return render_template('login.html', error=error), status_code
-
-@app.route('/about', methods = ['GET'])
-def about():
-    return render_template('about.html')
-
-@app.route('/main')
-@login_required
-def main():
-    g.db = connect_db()
-    cur = g.db.cursor()
-    cur.execute('select * from user')
-    posts = [dict(title=row[0], post=row[1], time= row[2]) for \
-    row in cur.fetchall()]
-    g.db.close()
-    return render_template('main.html', posts=posts)
-
-@app.route('/add', methods=['POST'])
-@login_required
-def add():
-    title = request.form['title']
-    post  = request.form['post']
-    time  = datetime.today() # Rename to Timestamp
-    if not title or not post:
-        flash("All fields are required. Please try again.", 'error')
-        return redirect(url_for('main'))
-    else:
-        g.db = connect_db()
-        cur = g.db.cursor()
-        cur.execute('''INSERT INTO user (title, posts, time)
-                       VALUES (%s ,%s, %s)
-                    ''' , (title,post,time)
-                    )
-        cur.close()
-        g.db.commit()
-        cur.close()
-        flash('New entry was successfully posted!')
-        return redirect(url_for('main'))
-
-@login_required
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    # To release a session use pop() method! "Gotta pop off"
-    flash('Loggout Successful')
-    return redirect(url_for('login'))
-
-if __name__ == '__main__':
-    app.run(debug = True)
-# I had a lot of fun with this, but how do I make it better?!
+</html>
