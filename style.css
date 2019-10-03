@@ -1,9 +1,18 @@
+html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
 .container {
   background: #f4f4f4;
   margin: 2em auto;
   padding: 0.8em;
-  width: 30em;
-  border: 2px solid #000;
+  width: 25%;
+  border: 3px solid #000;
 }
 
 .login-wrapper {
@@ -21,6 +30,11 @@ label {
   display: inline-block;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 input {
   margin-bottom: 10px;
 }
@@ -30,9 +44,36 @@ button {
   margin: 10px 0;
 }
 
+header {
+  margin: auto;
+  font-size: 25px;
+}
 
 .flash, .error {
   background: #000;
   color: #fff;
   padding: 0.5em;
+}
+
+.right {
+  display: flex; */
+  justify-content: space-between;
+  padding: 30px;
+  text-decoration:none;
+
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  background-color: pink;
+  align-items: center;
+  /* padding: 0px; */
+  /* margin-top:50px; */
+}
+
+.title {
+  font-size: 30px;
+
 }
